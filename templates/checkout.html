@@ -38,8 +38,6 @@
             border-radius: .25rem;
             transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
         }
-
-
     </style>
 
 
@@ -54,7 +52,6 @@
         </div>
 
         <div class="row">
-
 
             <div class="col-md-8 mx-auto order-md-1 card">
 
@@ -84,8 +81,8 @@
                             <select class="custom-select d-block w-100" id="state" required>
                                 <option value="">Choose...</option>
                                 <option>California</option>
+                                <option>Dhaka</option>
                                 <option>Yangon</option>
-
                             </select>
                             <div class="invalid-feedback">
                                 Please provide a valid state.
@@ -101,14 +98,14 @@
                     </div>
                     <hr class="mb-4">
                     <div class="custom-control custom-checkbox">
-                        <input {% if form.same_shipping_address.value %}checked{% endif %} type="checkbox"
+                        <input checked type="checkbox"
                                class="custom-control-input" id="same_shipping_address">
 
                         <label class="custom-control-label" for="same_shipping_address">Shipping address is the same as
                             my billing address</label>
                     </div>
                     <div class="custom-control custom-checkbox">
-                        <input {% if form.save_info.value %}checked{% endif %} type="checkbox"
+                        <input {% if form.save_info %} checked {% endif %} name="save_info" type="checkbox"
                                class="custom-control-input" id="save-info">
 
                         <label class="custom-control-label" for="save-info">Save this information for next time</label>

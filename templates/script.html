@@ -24,13 +24,29 @@
 
 <script type="text/javascript" src="{% static 'vendor/sweetalert/sweetalert.min.js' %}"></script>
 <script type="text/javascript">
+
+    $(".add-to-cart").on("click", function (e) {
+        e.preventDefault();
+
+        let url = $(this).attr('href');
+        $.ajax({
+            type: 'POST',
+            url,
+            data: {
+                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+            },
+            success: function (res) {
+                if (res.status === true) {
+                    $('#cart_total').text(res.cart_total_items);
+                    swal('Good job!', res.message, "success");
+                } else {
+                    swal('Oops...', res.message, "warning");
+                }
+            }
+        })
+    });
+
     $(".block2-btn-addcart").each(function () {
-        {#var nameProduct = $(this)#}
-        {#    .parent()#}
-        {#    .parent()#}
-        {#    .parent()#}
-        {#    .find(".block2-name")#}
-        {#    .html();#}
         $(this).on("click", function () {
             let url = $(this).data('url');
             $.ajax({
@@ -48,7 +64,6 @@
                     }
                 }
             })
-            //swal(nameProduct, "is added to cart !", "success");
         });
     });
 </script>

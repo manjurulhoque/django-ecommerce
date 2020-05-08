@@ -11,7 +11,7 @@ from django.shortcuts import redirect
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import ListView, DetailView, View
 
-from .forms import CheckoutForm, CouponForm, RefundForm
+from .forms import CheckoutForm
 from .models import *
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
@@ -23,11 +23,11 @@ def create_ref_code():
 
 class PaymentView(View):
     def get(self, *args, **kwargs):
-        # order
-        order = Order.objects.get(user=self.request.user, ordered=False)
+        order = Order.objects.filter(user=self.request.user, ordered=False)[0]
         if order.billing_address:
             context = {
                 'order': order,
+                'STRIPE_PUBLIC_KEY': settings.STRIPE_PUBLIC_KEY,
                 'DISPLAY_COUPON_FORM': False
             }
             return render(self.request, "payment.html", context)
@@ -37,7 +37,7 @@ class PaymentView(View):
             return redirect("core:checkout")
 
     def post(self, *args, **kwargs):
-        order = Order.objects.get(user=self.request.user, ordered=False)
+        order = Order.objects.filter(user=self.request.user, ordered=False)[0]
         token = self.request.POST.get('stripeToken')
         amount = int(order.get_total() * 100)
         try:
@@ -57,7 +57,7 @@ class PaymentView(View):
             order.ordered = True
             order.payment = payment
             # TODO : assign ref code
-            order.ref_code = create_ref_code()
+            # order.ref_code = create_ref_code()
             order.save()
 
             messages.success(self.request, "Order was successful")
@@ -73,16 +73,19 @@ class PaymentView(View):
         except stripe.error.RateLimitError as e:
             # Too many requests made to the API too quickly
             messages.error(self.request, "RateLimitError")
+            print(e)
             return redirect("/")
 
         except stripe.error.InvalidRequestError as e:
             # Invalid parameters were supplied to Stripe's API
             messages.error(self.request, "Invalid parameters")
+            print(e)
             return redirect("/")
 
         except stripe.error.AuthenticationError as e:
             # Authentication with Stripe's API failed
             # (maybe you changed API keys recently)
+            print(e)
             messages.error(self.request, "Not Authentication")
             return redirect("/")
 
@@ -147,9 +150,11 @@ class ShopView(ListView):
     template_name = "shop.html"
 
 
-class ItemDetailView(DetailView):
+class ProductDetailView(DetailView):
     model = Product
     template_name = "product-detail.html"
+    slug_field = 'id'
+    slug_url_kwarg = 'id'
 
 
 class CategoryView(View):
@@ -168,18 +173,24 @@ class CategoryView(View):
 class CheckoutView(View):
     def get(self, *args, **kwargs):
         try:
-            carts = Cart.objects.get(user=self.request.user)
-            form = CheckoutForm()
+            carts = Cart.objects.filter(user=self.request.user)[0]
+            address = BillingAddress.objects.filter(user=self.request.user, save_info=True)[0]
+            initial = {
+                'street_address': address.street_address,
+                'apartment_address': address.apartment_address,
+                'country': address.country,
+                'zip': address.zip,
+            }
+            form = CheckoutForm(initial=initial)
             context = {
                 'form': form,
-                'couponform': CouponForm(),
                 'carts': carts,
-                'DISPLAY_COUPON_FORM': True
+                'DISPLAY_COUPON_FORM': False
             }
             return render(self.request, "checkout.html", context)
 
         except ObjectDoesNotExist:
-            messages.info(self.request, "You do not have an active order")
+            messages.info(self.request, "You do not have an active cart")
             return redirect("core:home")
 
     def post(self, *args, **kwargs):
@@ -205,7 +216,8 @@ class CheckoutView(View):
                 apartment_address=apartment_address,
                 country=country,
                 zip=zip,
-                address_type='B'
+                address_type='B',
+                save_info=form.cleaned_data.get('save_info')
             )
             billing_address.save()
             carts = Cart.objects.filter(user=self.request.user)
@@ -216,6 +228,7 @@ class CheckoutView(View):
 
             carts.delete()
 
+            order.shipping_address = billing_address
             order.billing_address = billing_address
             order.save()
 
@@ -226,6 +239,8 @@ class CheckoutView(View):
             else:
                 messages.warning(self.request, "Invalid payment option select")
                 return redirect('core:checkout')
+        else:
+            return render(self.request, 'checkout.html', {'form': form})
 
 
 def add_to_cart(request, id):
@@ -247,30 +262,6 @@ def add_to_cart(request, id):
     return JsonResponse({'status': True, 'product_price': item.price, 'cart_total_items': cart_total_items,
                          'message': 'Successfully added to cart'},
                         safe=True)
-    # order_item, created = OrderItem.objects.get_or_create(
-    #     item=item,
-    #     user=request.user,
-    #     ordered=False
-    # )
-    # order_qs = Order.objects.filter(user=request.user, ordered=False)
-    # if order_qs.exists():
-    #     order = order_qs[0]
-    #     if order.items.filter(item__slug=item.slug).exists():
-    #         order_item.quantity += 1
-    #         order_item.save()
-    #         messages.info(request, "Item qty was updated.")
-    #         return redirect("core:order-summary")
-    #     else:
-    #         order.items.add(order_item)
-    #         messages.info(request, "Item was added to your cart.")
-    #         return redirect("core:order-summary")
-    # else:
-    #     ordered_date = timezone.now()
-    #     order = Order.objects.create(
-    #         user=request.user, ordered_date=ordered_date)
-    #     order.items.add(order_item)
-    #     messages.info(request, "Item was added to your cart.")
-    # return redirect("core:order-summary")
 
 
 @login_required
@@ -305,65 +296,3 @@ def remove_quantity_from_cart(request, id):
     return JsonResponse({'status': True, 'product_price': cart_item.product.price, 'cart_total_items': cart_total_items,
                          'message': 'Successfully removed quantity from the cart'},
                         safe=True)
-
-
-def get_coupon(request, code):
-    try:
-        coupon = Coupon.objects.get(code=code)
-        return coupon
-    except ObjectDoesNotExist:
-        messages.info(request, "This coupon does not exist")
-        return redirect("core:checkout")
-
-
-class AddCouponView(View):
-    def post(self, *args, **kwargs):
-        form = CouponForm(self.request.POST or None)
-        if form.is_valid():
-            try:
-                code = form.cleaned_data.get('code')
-                order = Order.objects.get(
-                    user=self.request.user, ordered=False)
-                order.coupon = get_coupon(self.request, code)
-                order.save()
-                messages.success(self.request, "Successfully added coupon")
-                return redirect("core:checkout")
-
-            except ObjectDoesNotExist:
-                messages.info(self.request, "You do not have an active order")
-                return redirect("core:checkout")
-
-
-class RequestRefundView(View):
-    def get(self, *args, **kwargs):
-        form = RefundForm()
-        context = {
-            'form': form
-        }
-        return render(self.request, "request_refund.html", context)
-
-    def post(self, *args, **kwargs):
-        form = RefundForm(self.request.POST)
-        if form.is_valid():
-            ref_code = form.cleaned_data.get('ref_code')
-            message = form.cleaned_data.get('message')
-            email = form.cleaned_data.get('email')
-            # edit the order
-            try:
-                order = Order.objects.get(ref_code=ref_code)
-                order.refund_requested = True
-                order.save()
-
-                # store the refund
-                refund = Refund()
-                refund.order = order
-                refund.reason = message
-                refund.email = email
-                refund.save()
-
-                messages.info(self.request, "Your request was received")
-                return redirect("core:request-refund")
-
-            except ObjectDoesNotExist:
-                messages.info(self.request, "This order does not exist")
-                return redirect("core:request-refund")

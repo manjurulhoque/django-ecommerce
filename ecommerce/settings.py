@@ -118,8 +118,8 @@ ACCOUNT_SIGNUP_FORM_CLASS = "core.forms.RegistrationForm"
 ACCOUNT_ADAPTER = "core.adapters.CustomAccountAdapter"
 
 # CRISPY FORM
-
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
-STRIPE_PUBLIC_KEY = 'pk_test_lX3r6OMjOU2yzFsNSHq6belT00EY82kZmH'
-STRIPE_SECRET_KEY = 'sk_test_tn0CTDaIJHUJyAqhsf39cfsC00LNjsqDnb'
+# Stripe
+STRIPE_PUBLIC_KEY = 'pk_test_WV6n5up0f0FHakMWR2hTk46a'
+STRIPE_SECRET_KEY = 'sk_test_VLu2GKrkoPQILyyGNXAGEdV4'

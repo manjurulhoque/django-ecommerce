@@ -77,7 +77,7 @@ class Product(models.Model):
 
     def get_absolute_url(self):
         return reverse("core:product", kwargs={
-            'slug': self.slug
+            'id': self.id
         })
 
     def get_add_to_cart_url(self):
@@ -87,7 +87,7 @@ class Product(models.Model):
 
     def get_remove_from_cart_url(self):
         return reverse("core:remove-from-cart", kwargs={
-            'slug': self.slug
+            'id': self.id
         })
 
 
@@ -168,14 +168,14 @@ class Order(models.Model):
 
 
 class BillingAddress(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL,
-                             on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     street_address = models.CharField(max_length=100)
     apartment_address = models.CharField(max_length=100)
     country = CountryField(multiple=False)
     zip = models.CharField(max_length=100)
     address_type = models.CharField(max_length=1, choices=ADDRESS_CHOICES)
     default = models.BooleanField(default=False)
+    save_info = models.BooleanField(default=False)
 
     def __str__(self):
         return self.user.username
@@ -186,8 +186,7 @@ class BillingAddress(models.Model):
 
 class Payment(models.Model):
     stripe_charge_id = models.CharField(max_length=50)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL,
-                             on_delete=models.SET_NULL, blank=True, null=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, blank=True, null=True)
     amount = models.FloatField()
     timestamp = models.DateTimeField(auto_now_add=True)
 
