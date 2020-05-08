@@ -1,7 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.http import Http404
-from django.shortcuts import render
+from django.http import Http404, HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, ListView, UpdateView
 
@@ -24,11 +23,19 @@ class DashboardView(LoginRequiredMixin, UserPassesTestMixin, ListView):
 class ProductCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     form_class = ProductCreateForm
     template_name = "seller/create-product.html"
-    success_url = "/"
+    success_url = reverse_lazy("seller:seller-dashboard")
     permission_denied_message = "You are not allowed to view this page"
 
     def test_func(self):
         return self.request.user.user_type == 'seller'
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return self.handle_no_permission()
+        if not self.request.user.profile.shop_name:
+            messages.success(self.request, 'Update your shop name before adding product')
+            return HttpResponseRedirect(reverse_lazy("seller:seller-dashboard"))
+        return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
         form.instance.user = self.request.user
@@ -59,6 +66,14 @@ class ProductUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     def test_func(self):
         return self.request.user.user_type == 'seller'
 
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return self.handle_no_permission()
+        if not self.request.user.profile.shop_name:
+            messages.success(self.request, 'Update your shop name before adding product')
+            return HttpResponseRedirect(reverse_lazy("seller:seller-dashboard"))
+        return super().dispatch(request, *args, **kwargs)
+
     def form_valid(self, form):
         form.instance.user = self.request.user
         messages.success(self.request, 'Product successfully updated')
@@ -69,3 +84,17 @@ class ProductUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         if obj is None:
             raise Http404("Product doesn't exists")
         return obj
+
+
+class ShopUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    form_class = SellerProfileUpdateForm
+    model = Profile
+    template_name = "seller/update-profile.html"
+    success_url = reverse_lazy("seller:seller-dashboard")
+    permission_denied_message = "You are not allowed to view this page"
+
+    def test_func(self):
+        return self.request.user.user_type == 'seller'
+
+    def get_object(self, queryset=None):
+        return self.request.user.profile

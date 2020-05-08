@@ -1,7 +1,7 @@
 from django import forms
 from django.utils.text import slugify
 
-from core.models import Product
+from core.models import *
 
 
 class ProductCreateForm(forms.ModelForm):
@@ -51,3 +51,12 @@ class ProductUpdateForm(forms.ModelForm):
         labels = {
             'discount_price': 'Discount price(optional)'
         }
+
+
+class SellerProfileUpdateForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(SellerProfileUpdateForm, self).__init__(*args, **kwargs)
+
+    class Meta:
+        model = Profile
+        fields = ("shop_name", "image")

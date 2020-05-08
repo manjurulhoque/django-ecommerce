@@ -1,6 +1,8 @@
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.shortcuts import reverse
 from django_countries.fields import CountryField
 
@@ -30,6 +32,18 @@ USER_TYPE_CHOICES = (
 
 class User(AbstractUser):
     user_type = models.CharField(choices=USER_TYPE_CHOICES, max_length=10)
+
+
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    image = models.ImageField(upload_to="profile", default="/profile/shop_logo.png")
+    shop_name = models.CharField(max_length=100)
+
+
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        Profile.objects.create(user=instance)
 
 
 class Slide(models.Model):
