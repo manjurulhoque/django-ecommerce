@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <h2>Cart Summary</h2>
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Image</th>
+                        <th scope="col">Product Name</th>
+                        <th scope="col">Price</th>
+                        <th scope="col">Qty</th>
+                        <th scope="col">Total Price</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for cart in carts %}
+                        <tr>
+                            <th scope="row">{{ forloop.counter }}</th>
+                            <td>
+                                <img src="{{ cart.product.image.url }}" style="width: 130px;">
+                            </td>
+                            <td>{{ cart.product.title }}</td>
+                            <td>${{ cart.product.price }}</td>
+                            <td>
+                                <div class="flex-w bo5 of-hidden w-size17">
+                                    <button class="btn-num-product-down color1 flex-c-m size7 bg8 eff2"
+                                            data-url="{{ cart.get_remove_quantity_from_cart_url }}">
+                                        <i class="fs-12 fa fa-minus" aria-hidden="true"></i>
+                                    </button>
+                                    <input class="size8 m-text18 t-center num-product" type="number" name="num-product1"
+                                           value="{{ cart.quantity }}" readonly>
+                                    <button class="btn-num-product-up color1 flex-c-m size7 bg8 eff2"
+                                            data-url="{{ cart.product.get_add_to_cart_url }}">
+                                        <i class="fs-12 fa fa-plus" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                            </td>
+                            <td>
+                                {% if cart.product.discount_price %}
+                                    ${{ cart.get_final_price }}
+                                    <p>Discount Price: ${{ cart.product.discount_price }}</p>
+                                    <span class="badge badge-primary">  Saving ${{ cart.get_amount_saved }}</span>
+                                {% else %}
+                                    ${{ cart.get_final_price }}
+                                {% endif %}
+                                <a style="color: red" onclick="return confirm('Are you sure?')" href="{% url 'core:remove-from-cart' cart.product.id %}">
+                                    <i class="fas fa-trash float-right"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td>Your cart is empty</td>
+                            <td>
+                                <a href="/" class="btn btn-primary float-right">Continue Shopping</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    {#                    <tr>#}
+                    {#                        <td colspan="5"><b>Coupon : </b></td>#}
+                    {#                        <td>- ${{ carts.coupon.amount }}</td>#}
+                    {#                    </tr>#}
+                    {% if carts.count %}
+                        <tr>
+                            <td colspan="5"><b>Order Total : </b></td>
+                            <td><b>${{ total }}</b></td>
+                        </tr>
+                        <tr>
+                            <td colspan="5">
+                                <a href="/checkout" class="btn btn-warning float-right ml-2">Checkout</a>
+                                <a href="/" class="btn btn-primary float-right">Continue Shopping</a>
+                            </td>
+                        </tr>
+                    {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}
