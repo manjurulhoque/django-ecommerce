@@ -60,6 +60,7 @@ class Category(models.Model):
 
 
 class Product(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=100)
     price = models.FloatField()
     discount_price = models.FloatField(blank=True, null=True)
@@ -75,8 +76,16 @@ class Product(models.Model):
     def __str__(self):
         return self.title
 
+    def get_status(self):
+        return 'Active' if self.is_active else 'Inactive'
+
     def get_absolute_url(self):
         return reverse("core:product", kwargs={
+            'id': self.id
+        })
+
+    def get_edit_url(self):
+        return reverse("seller:edit-product", kwargs={
             'id': self.id
         })
 

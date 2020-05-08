@@ -92,7 +92,10 @@
                                          alt="ICON">
                                 </a>
                                 <ul class="sub_menu">
-                                    <li><a href="#">My Account</a></li>
+                                    {% if request.user.user_type == 'seller' %}
+                                        <li><a href="{% url 'seller:create-product' %}">Add Product</a></li>
+                                    {% endif %}
+                                    <li><a href="{% url 'seller:seller-dashboard' %}">My Account</a></li>
                                 </ul>
                             </li>
                         </ul>
@@ -103,7 +106,7 @@
                     <div class="header-wrapicon2">
                         <img src="{% static 'images/icons/icon-header-02.png' %}"
                              class="header-icon1 js-show-header-dropdown" alt="ICON">
-                        {#                    <span class="header-icons-noti">0</span>#}
+                        {#<span class="header-icons-noti">0</span>#}
 
                         <!-- Header cart noti -->
                         <div class="header-cart header-dropdown">

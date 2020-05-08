@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block extra_head %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/custom.css' %}">
+{% endblock %}
+
+{% block head_title %}Dashboard{% endblock %}
+
+{% block content %}
+
+    <div id="content" class="section-padding">
+        <div class="container">
+            <div class="row">
+                {% include 'includes/sidebar.html' %}
+
+                <div class="col-sm-12 col-md-8 col-lg-9">
+                    <div class="page-content">
+                        {% if products.count > 0 %}
+                            <div class="inner-box">
+                                <div class="dashboard-box">
+                                    <h2 class="dashbord-title">Dashboard</h2>
+                                </div>
+                                <div class="dashboard-wrapper">
+                                    <div class="dashboard-sections">
+                                        <div class="row">
+                                            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-4">
+                                                <div class="dashboardbox">
+                                                    <div class="icon"><i class="lni-write"></i></div>
+                                                    <div class="contentbox">
+                                                        <h2><a href="#">Total Products</a></h2>
+                                                        <h3>{{ products.count }} Products Posted</h3>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <table style="display: table"
+                                           class="table table-responsive dashboardtable tablemyads">
+                                        <thead>
+                                        <tr>
+                                            <th>Photo</th>
+                                            <th>Title</th>
+                                            <th>Category</th>
+                                            <th>Ad Status</th>
+                                            <th>Price</th>
+                                            <th>Action</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% for product in products %}
+                                            <tr data-category="{{ product.is_active }}">
+                                                <td class="photo">
+                                                    <img class="img-fluid" src="{{ product.image.url }}" alt="">
+                                                </td>
+                                                <td data-title="Title">
+                                                    <h3>{{ product.title }}</h3>
+                                                </td>
+                                                <td data-title="Category">
+                                                    <span class="adcategories">{{ product.category.title }}</span>
+                                                </td>
+                                                <td data-title="Product Status">
+                                                    {% if product.is_active %}
+                                                        <span class="adstatus adstatusactive">{{ product.get_status }}</span>
+                                                    {% else %}
+                                                        <span class="adstatus adstatusinactive">{{ product.get_status }}</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td data-title="Price">
+                                                    <h3>${{ product.price }}</h3>
+                                                </td>
+                                                <td data-title="Action">
+                                                    <div class="btns-actions">
+                                                        <a class="btn-action btn-view"
+                                                           href="{{ product.get_absolute_url }}">
+                                                            <i class="lni-eye"></i>
+                                                        </a>
+                                                        <a class="btn-action btn-edit"
+                                                           href="{{ product.get_edit_url }}">
+                                                            <i class="lni-pencil"></i>
+                                                        </a>
+                                                        <a class="btn-action btn-delete"
+                                                           href="#">
+                                                            <i class="lni-trash"></i>
+                                                        </a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        {% else %}
+                            <h2 class="text-center">You don't have any products</h2>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

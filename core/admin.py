@@ -3,9 +3,6 @@ from django.contrib import admin
 from .models import Product, OrderItem, Order, Payment, BillingAddress, Category, Slide
 
 
-# Register your models here.
-
-
 def make_refund_accepted(modeladmin, request, queryset):
     queryset.update(refund_requested=False, refund_granted=True)
 
@@ -26,8 +23,7 @@ class OrderAdmin(admin.ModelAdmin):
         'billing_address',
         'payment',
     ]
-    list_filter = ['user',
-                   'ordered', ]
+    list_filter = ['user', 'ordered']
     search_fields = [
         'user__username',
         'ref_code'
