@@ -58,13 +58,15 @@
                         {% categories %}
 
                         {% if request.user.is_authenticated %}
-                            <li>
-                                <a href="{% url 'core:cart' %}">Cart
-                                    <span class="badge badge-dark"
-                                          id="cart_total">{{ request.user|cart_item_count }}
+                            {% if request.user.is_authenticated and request.user.user_type == 'buyer' %}
+                                <li>
+                                    <a href="{% url 'core:cart' %}">Cart
+                                        <span class="badge badge-dark"
+                                              id="cart_total">{{ request.user|cart_item_count }}
                                     </span>
-                                </a>
-                            </li>
+                                    </a>
+                                </li>
+                            {% endif %}
                             <li>
                                 <a href="{% url 'account_logout' %}">Logout</a>
                             </li>
@@ -102,59 +104,60 @@
                     </nav>
 
                     <span class="linedivide1"></span>
+                    {% if request.user.user_type == 'buyer' %}
+                        <div class="header-wrapicon2">
+                            <img src="{% static 'images/icons/icon-header-02.png' %}"
+                                 class="header-icon1 js-show-header-dropdown" alt="ICON">
+                            {#<span class="header-icons-noti">0</span>#}
 
-                    <div class="header-wrapicon2">
-                        <img src="{% static 'images/icons/icon-header-02.png' %}"
-                             class="header-icon1 js-show-header-dropdown" alt="ICON">
-                        {#<span class="header-icons-noti">0</span>#}
+                            <!-- Header cart noti -->
+                            <div class="header-cart header-dropdown">
+                                {% limited_carts 3 as all_carts %}
+                                <ul class="header-cart-wrapitem">
+                                    {% for cart in all_carts %}
+                                        <li class="header-cart-item">
+                                            <div class="header-cart-item-img">
+                                                <img src="{% static 'images/item-cart-01.jpg' %}" alt="IMG">
+                                            </div>
 
-                        <!-- Header cart noti -->
-                        <div class="header-cart header-dropdown">
-                            {% limited_carts 3 as all_carts %}
-                            <ul class="header-cart-wrapitem">
-                                {% for cart in all_carts %}
-                                    <li class="header-cart-item">
-                                        <div class="header-cart-item-img">
-                                            <img src="{% static 'images/item-cart-01.jpg' %}" alt="IMG">
-                                        </div>
+                                            <div class="header-cart-item-txt">
+                                                <a href="#" class="header-cart-item-name">
+                                                    {{ cart.product.title }}
+                                                </a>
 
-                                        <div class="header-cart-item-txt">
-                                            <a href="#" class="header-cart-item-name">
-                                                {{ cart.product.title }}
-                                            </a>
-
-                                            <span class="header-cart-item-info">
+                                                <span class="header-cart-item-info">
 											{{ cart.quantity }} x ${{ cart.product.price }}
 										</span>
-                                        </div>
-                                    </li>
-                                {% endfor %}
-                            </ul>
+                                            </div>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
 
-                            {#                        <div class="header-cart-total">#}
-                            {#                            Total: $75.00#}
-                            {#                        </div>#}
+                                {#                        <div class="header-cart-total">#}
+                                {#                            Total: $75.00#}
+                                {#                        </div>#}
 
-                            <div class="header-cart-buttons">
-                                <div class="header-cart-wrapbtn">
-                                    <!-- Button -->
-                                    <a href="{% url 'core:cart' %}"
-                                       class="flex-c-m size1 bg1 bo-rad-20 hov1 s-text1 trans-0-4">
-                                        View Cart
-                                    </a>
-                                </div>
-                                {% if all_carts %}
+                                <div class="header-cart-buttons">
                                     <div class="header-cart-wrapbtn">
                                         <!-- Button -->
-                                        <a href="{% url 'core:checkout' %}"
+                                        <a href="{% url 'core:cart' %}"
                                            class="flex-c-m size1 bg1 bo-rad-20 hov1 s-text1 trans-0-4">
-                                            Check Out
+                                            View Cart
                                         </a>
                                     </div>
-                                {% endif %}
+                                    {% if all_carts %}
+                                        <div class="header-cart-wrapbtn">
+                                            <!-- Button -->
+                                            <a href="{% url 'core:checkout' %}"
+                                               class="flex-c-m size1 bg1 bo-rad-20 hov1 s-text1 trans-0-4">
+                                                Check Out
+                                            </a>
+                                        </div>
+                                    {% endif %}
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    {% endif %}
                 </div>
             {% endif %}
         </div>

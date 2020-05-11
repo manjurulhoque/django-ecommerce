@@ -12,6 +12,7 @@ from django.shortcuts import render, get_object_or_404
 from django.views.generic import ListView, DetailView, View
 
 from .forms import CheckoutForm
+from .mixins import BuyerRequiredMixin
 from .models import *
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
@@ -32,8 +33,7 @@ class PaymentView(View):
             }
             return render(self.request, "payment.html", context)
         else:
-            messages.warning(
-                self.request, "u have not added a billing address")
+            messages.warning(self.request, "You have not added a billing address")
             return redirect("core:checkout")
 
     def post(self, *args, **kwargs):
@@ -112,7 +112,7 @@ class HomeView(ListView):
     context_object_name = 'items'
 
 
-class CartListView(LoginRequiredMixin, ListView):
+class CartListView(LoginRequiredMixin, BuyerRequiredMixin, ListView):
     model = Cart
     context_object_name = "carts"
     template_name = "cart.html"
@@ -249,6 +249,8 @@ def add_to_cart(request, id):
         return JsonResponse({'status': False, 'message': 'Product not found'}, safe=True)
     if not request.user.is_authenticated:
         return JsonResponse({'status': False, 'message': 'Please login to continue'}, safe=True)
+    if not request.user.user_type == 'buyer':
+        return JsonResponse({'status': False, 'message': 'Only buyer is allowed to make this action'}, safe=True)
     if Cart.objects.filter(user=request.user, product=item).exists():
         cart = Cart.objects.get(user=request.user, product=item)
         cart.quantity += 1
