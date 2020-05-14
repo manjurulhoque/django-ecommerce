@@ -96,8 +96,10 @@
                                 <ul class="sub_menu">
                                     {% if request.user.user_type == 'seller' %}
                                         <li><a href="{% url 'seller:create-product' %}">Add Product</a></li>
+                                        <li><a href="{% url 'seller:seller-dashboard' %}">My Account</a></li>
+                                    {% else %}
+                                        <li><a href="{% url 'buyer:buyer-dashboard' %}">My Account</a></li>
                                     {% endif %}
-                                    <li><a href="{% url 'seller:seller-dashboard' %}">My Account</a></li>
                                 </ul>
                             </li>
                         </ul>

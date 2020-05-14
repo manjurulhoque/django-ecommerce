@@ -17,7 +17,7 @@
 
                 <div class="col-sm-12 col-md-8 col-lg-9">
                     <div class="page-content">
-                        {% if products.count > 0 %}
+                        {% if orders.count > 0 %}
                             <div class="inner-box">
                                 <div class="dashboard-box">
                                     <h2 class="dashbord-title">Dashboard</h2>
@@ -29,8 +29,8 @@
                                                 <div class="dashboardbox">
                                                     <div class="icon"><i class="lni-write"></i></div>
                                                     <div class="contentbox">
-                                                        <h2><a href="#">Total Products</a></h2>
-                                                        <h3>{{ products.count }} Products Posted</h3>
+                                                        <h2><a href="#">Total Orders</a></h2>
+                                                        <h3>{{ orders.count }} Orders</h3>
                                                     </div>
                                                 </div>
                                             </div>
@@ -40,49 +40,25 @@
                                            class="table table-responsive dashboardtable tablemyads">
                                         <thead>
                                         <tr>
-                                            <th>Photo</th>
-                                            <th>Title</th>
-                                            <th>Category</th>
-                                            <th>Status</th>
-                                            <th>Price</th>
+                                            <th>Total Price</th>
+                                            <th>Total Items</th>
                                             <th>Action</th>
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        {% for product in products %}
-                                            <tr data-category="{{ product.is_active }}">
-                                                <td class="photo">
-                                                    <img class="img-fluid" src="{{ product.image.url }}" alt="">
-                                                </td>
-                                                <td data-title="Title">
-                                                    <h3>{{ product.title }}</h3>
-                                                </td>
-                                                <td data-title="Category">
-                                                    <span class="adcategories">{{ product.category.title }}</span>
-                                                </td>
-                                                <td data-title="Product Status">
-                                                    {% if product.is_active %}
-                                                        <span class="adstatus adstatusactive">{{ product.get_status }}</span>
-                                                    {% else %}
-                                                        <span class="adstatus adstatusinactive">{{ product.get_status }}</span>
-                                                    {% endif %}
-                                                </td>
+                                        {% for order in orders %}
+                                            <tr>
                                                 <td data-title="Price">
-                                                    <h3>${{ product.price }}</h3>
+                                                    <h3>{{ order.get_total }}</h3>
+                                                </td>
+                                                <td data-title="Items">
+                                                    <span class="adcategories">{{ order.items.count }} Items</span>
                                                 </td>
                                                 <td data-title="Action">
                                                     <div class="btns-actions">
                                                         <a class="btn-action btn-view"
-                                                           href="{{ product.get_absolute_url }}">
-                                                            <i class="lni-eye"></i>
-                                                        </a>
-                                                        <a class="btn-action btn-edit"
-                                                           href="{{ product.get_edit_url }}">
-                                                            <i class="lni-pencil"></i>
-                                                        </a>
-                                                        <a class="btn-action btn-delete"
-                                                           href="#">
-                                                            <i class="lni-trash"></i>
+                                                           href="{{ order.get_absolute_url }}">
+                                                            <i class="lni-paperclip"></i>
                                                         </a>
                                                     </div>
                                                 </td>
@@ -93,7 +69,7 @@
                                 </div>
                             </div>
                         {% else %}
-                            <h2 class="text-center">You don't have any products</h2>
+                            <h2 class="text-center">You don't have any Orders</h2>
                         {% endif %}
                     </div>
                 </div>

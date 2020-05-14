@@ -17,23 +17,32 @@
             <nav class="navdashboard">
                 <ul>
                     <li>
-                        <a href="{% url 'seller:seller-dashboard' %}">
-                            <i class="lni-dashboard"></i>
-                            <span>Dashboard</span>
-                        </a>
+                        {% if request.user.user_type == 'seller' %}
+                            <a href="{% url 'seller:seller-dashboard' %}">
+                                <i class="lni-dashboard"></i>
+                                <span>Dashboard</span>
+                            </a>
+                        {% else %}
+                            <a href="{% url 'buyer:buyer-dashboard' %}">
+                                <i class="lni-dashboard"></i>
+                                <span>Dashboard</span>
+                            </a>
+                        {% endif %}
                     </li>
-                    <li>
-                        <a href="{% url 'seller:create-product' %}">
-                            <i class="lni-cog"></i>
-                            <span>Create Product</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{% url 'seller:update-shop' %}">
-                            <i class="lni-cog"></i>
-                            <span>Shop Settings</span>
-                        </a>
-                    </li>
+                    {% if request.user.user_type == 'seller' %}
+                        <li>
+                            <a href="{% url 'seller:create-product' %}">
+                                <i class="lni-cog"></i>
+                                <span>Create Product</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'seller:update-shop' %}">
+                                <i class="lni-cog"></i>
+                                <span>Shop Settings</span>
+                            </a>
+                        </li>
+                    {% endif %}
                     <li>
                         <a href="{% url 'account_logout' %}">
                             <i class="lni-enter"></i>
