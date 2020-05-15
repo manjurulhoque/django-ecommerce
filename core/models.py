@@ -176,8 +176,7 @@ class Order(models.Model):
         'BillingAddress', related_name='shipping_address', on_delete=models.SET_NULL, blank=True, null=True)
     billing_address = models.ForeignKey(
         'BillingAddress', related_name='billing_address', on_delete=models.SET_NULL, blank=True, null=True)
-    payment = models.ForeignKey(
-        'Payment', on_delete=models.SET_NULL, blank=True, null=True)
+    payment = models.ForeignKey('Payment', on_delete=models.SET_NULL, blank=True, null=True)
 
     def __str__(self):
         return self.user.username
@@ -187,6 +186,11 @@ class Order(models.Model):
         for order_item in self.items.all():
             total += order_item.get_final_price()
         return total
+
+    def get_invoice_url(self):
+        return reverse("buyer:generate-invoice", kwargs={
+            'order_id': self.id
+        })
 
 
 class BillingAddress(models.Model):
@@ -200,7 +204,7 @@ class BillingAddress(models.Model):
     save_info = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.user.username
+        return f"{self.street_address}, {self.apartment_address}, {self.zip}, {self.country}"
 
     class Meta:
         verbose_name_plural = 'BillingAddresses'

@@ -49,7 +49,7 @@
                                         {% for order in orders %}
                                             <tr>
                                                 <td data-title="Price">
-                                                    <h3>{{ order.get_total }}</h3>
+                                                    <h3>$ {{ order.get_total }}</h3>
                                                 </td>
                                                 <td data-title="Items">
                                                     <span class="adcategories">{{ order.items.count }} Items</span>
@@ -57,7 +57,7 @@
                                                 <td data-title="Action">
                                                     <div class="btns-actions">
                                                         <a class="btn-action btn-view"
-                                                           href="{{ order.get_absolute_url }}">
+                                                           href="{{ order.get_invoice_url }}" title="Generate invoice">
                                                             <i class="lni-paperclip"></i>
                                                         </a>
                                                     </div>

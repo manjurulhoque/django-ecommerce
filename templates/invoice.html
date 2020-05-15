@@ -1,0 +1,117 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Order Invoice</title>
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <link href="{% static 'css/invoice.css' %}" rel="stylesheet">
+</head>
+<body>
+<div id="invoice">
+
+    <div class="toolbar hidden-print">
+        <div class="text-right">
+            <button id="printInvoice" class="btn btn-info"><i class="fa fa-print"></i> Print</button>
+        </div>
+        <hr>
+    </div>
+    <div class="invoice overflow-auto">
+        <div style="min-width: 600px">
+            <header>
+                <div class="row">
+                    <div class="col">
+                        <a target="_blank" href="https://lobianijs.com">
+                            <img src="{% static 'images/icons/logo.png' %}" data-holder-rendered="true"/>
+                        </a>
+                    </div>
+                    <div class="col company-details">
+                        <h2 class="name">
+                            <a target="_blank" href="#">
+                                Manager
+                            </a>
+                        </h2>
+                        <div>455 Foggy Heights, AZ 85004, US</div>
+                        <div>(123) 456-789</div>
+                        <div>fashone@gmail.com</div>
+                    </div>
+                </div>
+            </header>
+            <main>
+                <div class="row contacts">
+                    <div class="col invoice-to">
+                        <div class="text-gray-light">INVOICE TO:</div>
+                        <h2 class="to">{{ request.user.username }}</h2>
+                        <div class="address">{{ order.billing_address }}</div>
+                        <div class="email"><a href="mailto:john@example.com">{{ request.user.email }}</a></div>
+                    </div>
+{#                    <div class="col invoice-details">#}
+{#                        <div class="date">Date of Invoice: 01/10/2018</div>#}
+{#                        <div class="date">Due Date: 30/10/2018</div>#}
+{#                    </div>#}
+                </div>
+                <table border="0" cellspacing="0" cellpadding="0">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th class="text-left">DESCRIPTION</th>
+                        <th class="text-right">PRICE</th>
+                        <th class="text-right">QUANTITY</th>
+                        <th class="text-right">TOTAL</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for item in order.items.all %}
+                        <tr>
+                            <td class="no">{{ forloop.counter }}</td>
+                            <td class="text-left">
+                                <h3>{{ item.product.title }}</h3>
+                                <p>{{ item.product.description_short }}</p>
+                            </td>
+                            <td class="unit">${{ item.product.price }}</td>
+                            <td class="qty">{{ item.quantity }}</td>
+                            <td class="total">${{ item.get_final_price }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                    <tfoot>
+                    <tr>
+                        <td colspan="2"></td>
+                        <td colspan="2">GRAND TOTAL</td>
+                        <td>${{ order.get_total }}</td>
+                    </tr>
+                    </tfoot>
+                </table>
+                <div class="thanks" style="margin-top: 2%">Thank you!</div>
+{#                <div class="notices">#}
+{#                    <div>NOTICE:</div>#}
+{#                    <div class="notice">A finance charge of 1.5% will be made on unpaid balances after 30 days.</div>#}
+{#                </div>#}
+            </main>
+            <footer>
+                Invoice was created on a computer and is valid without the signature and seal.
+            </footer>
+        </div>
+        <!--DO NOT DELETE THIS div. IT is responsible for showing footer always at the bottom-->
+        <div></div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $('#printInvoice').click(function () {
+        Popup($('.invoice')[0].outerHTML);
+
+        function Popup(data) {
+            window.print();
+            return true;
+        }
+    });
+</script>
+
+</body>
+</html>
