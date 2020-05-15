@@ -15,7 +15,7 @@ class CheckoutForm(forms.Form):
         'placeholder': '1234 Main St',
         'required': True,
         'class': 'form-control'
-    }))
+    }), error_messages={'required': 'Street address is required'})
     apartment_address = forms.CharField(required=False, widget=forms.TextInput(attrs={
         'placeholder': 'Apartment or suite',
         'class': 'form-control'
@@ -23,14 +23,15 @@ class CheckoutForm(forms.Form):
     country = CountryField(blank_label='Select country').formfield(widget=CountrySelectWidget(attrs={
         'class': 'custom-select d-block w-100',
         'required': True,
-    }))
+    }), error_messages={'required': 'Country is required'})
     zip = forms.CharField(widget=forms.TextInput(attrs={
         'class': 'form-control',
         'required': True,
-    }))
+    }), error_messages={'required': 'Zip is required'})
     same_shipping_address = forms.BooleanField(required=False)
     save_info = forms.BooleanField(required=False)
-    payment_option = forms.ChoiceField(widget=forms.RadioSelect, choices=PAYMENT_CHOICES)
+    payment_option = forms.ChoiceField(widget=forms.RadioSelect, choices=PAYMENT_CHOICES,
+                                       error_messages={'required': 'Payment option is required'})
 
 
 USER_TYPE_CHOICES = (

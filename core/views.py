@@ -174,13 +174,21 @@ class CheckoutView(View):
     def get(self, *args, **kwargs):
         try:
             carts = Cart.objects.filter(user=self.request.user)[0]
-            address = BillingAddress.objects.filter(user=self.request.user, save_info=True)[0]
-            initial = {
-                'street_address': address.street_address,
-                'apartment_address': address.apartment_address,
-                'country': address.country,
-                'zip': address.zip,
-            }
+            if BillingAddress.objects.filter(user=self.request.user, save_info=True).exists():
+                address = BillingAddress.objects.filter(user=self.request.user, save_info=True)[0]
+                initial = {
+                    'street_address': address.street_address,
+                    'apartment_address': address.apartment_address,
+                    'country': address.country,
+                    'zip': address.zip,
+                }
+            else:
+                initial = {
+                    'street_address': '',
+                    'apartment_address': '',
+                    'country': '',
+                    'zip': '',
+                }
             form = CheckoutForm(initial=initial)
             context = {
                 'form': form,

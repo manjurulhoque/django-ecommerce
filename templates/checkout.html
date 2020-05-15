@@ -46,14 +46,27 @@
             <img class="d-block mx-auto mb-4" src="/docs/4.3/assets/brand/bootstrap-solid.svg" alt="" width="72"
                  height="72">
             <h2>Checkout form</h2>
-            <p class="lead">Below is an example form built entirely with Bootstrap’s form controls. Each required form
-                group has a validation state that can be triggered by attempting to submit the form without completing
-                it.</p>
+            <p class="lead">Below is our checkout form.</p>
         </div>
 
         <div class="row">
 
             <div class="col-md-8 mx-auto order-md-1 card">
+
+                {% if form.errors %}
+                    {% for field in form %}
+                        {% for error in field.errors %}
+                            <div class="alert alert-danger">
+                                <strong>{{ error|escape }}</strong>
+                            </div>
+                        {% endfor %}
+                    {% endfor %}
+                    {% for error in form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            <strong>{{ error|escape }}</strong>
+                        </div>
+                    {% endfor %}
+                {% endif %}
 
                 <h4 class="mb-3" style=" margin-top: 26px;">Billing address</h4>
                 <form method="POST" class="needs-validation" novalidate>
@@ -106,7 +119,7 @@
                     </div>
                     <div class="custom-control custom-checkbox">
                         <input {% if form.save_info %} checked {% endif %} name="save_info" type="checkbox"
-                               class="custom-control-input" id="save-info">
+                                                       class="custom-control-input" id="save-info">
 
                         <label class="custom-control-label" for="save-info">Save this information for next time</label>
                     </div>
