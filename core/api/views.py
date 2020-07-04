@@ -13,3 +13,13 @@ class ProductListAPIView(ListAPIView):
 class ProductDetailAPIView(RetrieveAPIView):
     queryset = Product.objects.select_related('category').filter(is_active=True)
     serializer_class = ProductSerializer
+
+
+class CategoryListAPIView(ListAPIView):
+    serializer_class = CategorySerializer
+    queryset = Category.objects.filter(is_active=True).order_by('-id')
+
+
+class CategoryDetailAPIView(RetrieveAPIView):
+    serializer_class = CategoryDetailsSerializer
+    queryset = Category.objects.filter(is_active=True).order_by('-id')
