@@ -7,6 +7,7 @@ class ProductSetPagination(PageNumberPagination):
 
     def get_paginated_response(self, data):
         return Response({
+            'status': True,
             'meta': {
                 'page': self.page.number,
                 'has_prev': self.page.has_previous(),

@@ -45,6 +45,19 @@ class CategorySerializer(DynamicFieldsModelSerializer):
     def total_products_count(self, obj):
         return obj.product_set.count()
 
+    # def to_representation(self, instance):
+    #     identifiers = dict()
+    #     identifiers['email'] = instance.Email
+    #     identifiers['phone'] = instance.phone
+    #
+    #     representation = {
+    #         'identifiers': identifiers,
+    #         'activity_type': instance.xxxx,
+    #         'timestamp': instance.xxxxx,
+    #     }
+    #
+    #     return representation
+
 
 class ProductSerializer(DynamicFieldsModelSerializer):
     category = CategorySerializer(fields=('id', 'title', 'slug', 'description', 'image'))
