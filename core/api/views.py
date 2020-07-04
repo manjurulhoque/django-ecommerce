@@ -66,3 +66,43 @@ def add_to_cart_api(request: HttpRequest, id: int) -> JsonResponse:
     return JsonResponse({'status': True, 'product_price': item.price, 'cart_total_items': cart_total_items,
                          'message': 'Successfully added to cart'},
                         safe=True)
+
+
+def remove_from_cart(request: HttpRequest, id: int) -> JsonResponse:
+    if not request.user.is_authenticated:
+        return JsonResponse({'status': False, 'message': 'Please login to continue'}, safe=True)
+    try:
+        item = Cart.objects.get(id=id)
+        item.delete()
+        return JsonResponse({'status': True, 'message': 'Item removed from cart'}, safe=True)
+    except:
+        return JsonResponse({'status': False, 'message': 'Item not found'}, safe=True)
+
+
+def remove_quantity_from_cart(request: HttpRequest, id: int) -> JsonResponse:
+    if not request.user.is_authenticated:
+        return JsonResponse({'status': False, 'message': 'Please login to continue'}, safe=True)
+    cart_item = get_object_or_404(Cart, id=id)
+    # if quantity is 1 and we still need to decrease qty, then we will remove the item from cart
+    if cart_item.quantity == 1:
+        cart_item.delete()
+
+        cart_total_items = Cart.objects.filter(user=request.user).count()
+        return JsonResponse({
+            'status': True,
+            'product_price': cart_item.product.price,
+            'cart_total_items': cart_total_items,
+            'message': 'Successfully removed quantity from the cart'
+        }, safe=True)
+    # decreasing quantity
+    cart_item.quantity -= 1
+    cart_item.save()
+
+    cart_total_items = Cart.objects.filter(user=request.user).count()
+
+    return JsonResponse({
+        'status': True,
+        'product_price': cart_item.product.price,
+        'cart_total_items': cart_total_items,
+        'message': 'Successfully removed quantity from the cart'
+    }, safe=True)

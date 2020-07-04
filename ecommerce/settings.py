@@ -15,6 +15,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
+    'corsheaders',
     'rest_framework',
     'allauth',
     'allauth.account',
@@ -28,6 +29,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -111,6 +113,7 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
+# rest framework
 REST_FRAMEWORK = {
     'EXCEPTION_HANDLER': 'core.api.custom_exception.custom_exception_handler',
 }
@@ -128,3 +131,6 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 # Stripe
 STRIPE_PUBLIC_KEY = 'pk_test_WV6n5up0f0FHakMWR2hTk46a'
 STRIPE_SECRET_KEY = 'sk_test_VLu2GKrkoPQILyyGNXAGEdV4'
+
+# CORS
+CORS_ORIGIN_ALLOW_ALL = True
