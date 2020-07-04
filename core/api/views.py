@@ -1,4 +1,4 @@
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpRequest
 from rest_framework.generics import ListAPIView, RetrieveAPIView, get_object_or_404
 
 from .serializers import *
@@ -21,7 +21,7 @@ class CategoryListAPIView(ListAPIView):
     serializer_class = CategorySerializer
     queryset = Category.objects.filter(is_active=True).order_by('-id')
 
-    def list(self, request, *args, **kwargs):
+    def list(self, request, *args, **kwargs) -> Response:
         queryset = self.get_queryset()
         serializer = CategorySerializer(queryset, many=True)
 
@@ -37,7 +37,7 @@ class CategoryDetailAPIView(RetrieveAPIView):
     serializer_class = CategoryDetailsSerializer
     queryset = Category.objects.filter(is_active=True).order_by('-id')
 
-    def retrieve(self, request, *args, **kwargs):
+    def retrieve(self, request, *args, **kwargs) -> Response:
         instance = self.get_object()
         serializer = self.get_serializer(instance)
         data = serializer.data
@@ -48,7 +48,7 @@ class CategoryDetailAPIView(RetrieveAPIView):
         return Response(response)
 
 
-def add_to_cart_api(request, id):
+def add_to_cart_api(request: HttpRequest, id: int) -> JsonResponse:
     item = get_object_or_404(Product, id=id)
     if not item:
         return JsonResponse({'status': False, 'message': 'Product not found'}, safe=True)
