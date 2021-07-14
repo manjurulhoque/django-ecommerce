@@ -134,3 +134,5 @@ STRIPE_SECRET_KEY = 'sk_test_VLu2GKrkoPQILyyGNXAGEdV4'
 
 # CORS
 CORS_ORIGIN_ALLOW_ALL = True
+
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
