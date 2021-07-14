@@ -1,3 +1,4 @@
+aniso8601==7.0.0
 asgiref==3.4.1
 asn1crypto==0.24.0
 astroid==2.2.5
@@ -20,6 +21,11 @@ django-countries==7.2.1
 django-crispy-forms==1.12.0
 django-tinymce4-lite==1.7.5
 djangorestframework==3.12.4
+graphene==2.1.8
+graphene-django==2.15.0
+graphene-file-upload==1.3.0
+graphql-core==2.3.2
+graphql-relay==2.0.1
 hyperlink==19.0.0
 idna==2.8
 incremental==17.5.0
@@ -30,6 +36,7 @@ mccabe==0.6.1
 oauthlib==3.1.0
 pep8==1.7.1
 Pillow==8.3.1
+promise==2.3
 psycopg2==2.8.3
 pycodestyle==2.5.0
 pycparser==2.19
@@ -40,9 +47,12 @@ python3-openid==3.1.0
 pytz==2018.5
 requests==2.22.0
 requests-oauthlib==1.2.0
+Rx==1.6.1
+singledispatch==3.6.2
 six==1.12.0
 sqlparse==0.2.4
 stripe==2.37.1
+text-unidecode==1.3
 txaio==18.8.1
 typed-ast==1.4.0
 urllib3==1.25.8

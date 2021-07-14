@@ -1,4 +1,5 @@
 import os
+from datetime import timedelta
 
 ENVIRONMENT = os.getenv('ENVIRONMENT', 'development')
 
@@ -15,6 +16,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
+    'graphene_django',
     'corsheaders',
     'rest_framework',
     'allauth',
@@ -136,3 +138,20 @@ STRIPE_SECRET_KEY = 'sk_test_VLu2GKrkoPQILyyGNXAGEdV4'
 CORS_ORIGIN_ALLOW_ALL = True
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
+GRAPHENE = {
+    'SCHEMA': 'ecommerce.schema.schema',
+    # https://docs.graphene-python.org/projects/django/en/latest/introspection/
+    'SCHEMA_OUTPUT': 'schema.json',  # defaults to schema.json,
+    'SCHEMA_INDENT': 4,  # Defaults to None (displays all data on a single line)
+    'MIDDLEWARE': [
+        'graphene_django.debug.DjangoDebugMiddleware'
+    ]
+}
+
+GRAPHQL_JWT = {
+    'JWT_VERIFY_EXPIRATION': True,
+    'JWT_LONG_RUNNING_REFRESH_TOKEN': True,
+    'JWT_EXPIRATION_DELTA': timedelta(hours=24),
+    'JWT_REFRESH_EXPIRATION_DELTA': timedelta(days=7),
+}
